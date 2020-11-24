@@ -64,10 +64,40 @@ function abre_configuracoes()
     $wpdb->query("DELETE FROM {$wpdb->prefix}agenda WHERE id = $id");
   }
 
+  // EDITAR
+  if ( isset($_GET['editar_form']) && !isset($_POST['alterar']) ) {
 
+    //Recuperar dados
+    $id = preg_replace('/\D/', '', $_GET['editar_form']);
+
+    $consultaBanco = $wpdb->get_results("SELECT nome, whatsapp 
+                          FROM {$wpdb->prefix}agenda 
+                          WHERE id = $id");
+
+    require 'form_editar.php';
+    exit();
+  }
+
+  // EDITAR
+  if ( isset($_POST['alterar']) ) {
+
+    $wpdb->query($wpdb->prepare(
+      "             UPDATE  {$wpdb->prefix}agenda
+                    SET nome = %s, whatsapp = %d
+                    WHERE id = %d
+      ",
+      $_POST['nome'],
+      $_POST['whatsapp'],
+      $_POST['id']
+    ));
+  }
+
+
+
+  // GRAVAR e EDITAR
   // GRAVAR
   if (isset($_POST['submit'])) {
-    if (isset($_POST['submit']) == 'Gravar') {
+    if (isset($_POST['submit']) == 'Gravar' && !isset($_POST['alterar'])) {
 
       $wpdb->query($wpdb->prepare(
         "INSERT INTO {$wpdb->prefix}agenda
